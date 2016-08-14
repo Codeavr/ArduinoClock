@@ -254,3 +254,4 @@ paket-files/
 /*.vcxproj
 /ArduinoClock.vcxproj.filters
 __vm
+*.sln
