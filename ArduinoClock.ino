@@ -29,7 +29,6 @@ void setup()
 	}
 	pinMode(SOUND_PIN, OUTPUT);
 	clear();
-	userTimeOffset = 100000;
 }
 void loop()
 {
@@ -249,25 +248,32 @@ void alarmFastScreen()
 }
 void temperatureScreen()
 {
-	if (isButtonDown(2))
-		currentScreen = HOUR_CLOCK_SCREENID;
-
-	double t = getTemperature();
-
 	byte data[] = { 0, 0, 0, 14 };
-
-	if (t >= 0)
-	{
-
-	}
-	else
-	{
-
-	}
-
 	bool mask[] = { 0, 0, 0, 1 };
 
+	String tstr = String(getTemperature());
+	
+	for (size_t i = 0, di = 0; i < tstr.length() && di < 3; i++, di++)
+	{
+		if (tstr[i] >= '0' && tstr[i] <= '9')
+		{
+			data[di] = tstr[i] - '0';
+		}
+		else if (tstr[i] == ',' || tstr[i] == '.')
+		{
+			di--;
+			mask[i - 1] = 1;
+		}
+		else if (tstr[i] == '-')
+		{
+			data[di] = 15;
+		}
+		else data[di] = 10;
+	}
+
 	displayLED(data, mask);
+
+	if (isButtonDown(2)) currentScreen = HOUR_CLOCK_SCREENID;
 }
 
 inline void handleAlarm()
@@ -297,4 +303,3 @@ inline void handleFastScreens()
 		currentScreen = lastScreenID;
 	}
 }
-
